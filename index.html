@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PaseÁgil · prototipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{--ink:#0F2A33;--teal:#1F7C76;--teal-bg:#E3F1EF;--alert:#B4501F;--alert-bg:#FBEDE5;--alert-line:#F1C9B3;--muted:#4E6166;--line:#DCE3E1;--ground:#F3F6F5;--soft:#F7FAF9;--white:#FFFFFF}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#1B2B30;font-family:'IBM Plex Sans',Arial,sans-serif;color:var(--ink)}
+button{font:inherit;cursor:pointer;color:inherit}
+textarea{font:inherit}
+.chrome{height:52px;display:flex;align-items:center;justify-content:center;gap:8px;color:#C9DDD9;font-size:13px}
+.chrome button{min-height:36px;padding:0 14px;border-radius:999px;border:1px solid #5E7A80;background:transparent;color:#F3F6F5;font-size:13px;font-weight:600}
+.chrome button.on{background:#8FC9C3;border-color:#8FC9C3;color:var(--ink)}
+.stage{position:relative;height:calc(100% - 52px);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.frame{transform-origin:center center;flex-shrink:0;border-radius:18px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+#tablet{width:1280px;height:800px;display:flex;flex-direction:column;background:var(--ground);font-size:14px}
+#phone{width:390px;height:844px;display:flex;flex-direction:column;background:var(--ground);border-radius:36px}
+.hidden{display:none!important}
+header.top{height:64px;flex-shrink:0;display:flex;align-items:center;gap:24px;padding:0 24px;background:var(--ink);color:#F3F6F5}
+.logo{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:700}
+.body{flex:1;display:flex;min-height:0}
+nav.side{width:290px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;padding:16px 12px;background:var(--white);border-right:1px solid var(--line);overflow-y:auto}
+.row{display:flex;flex-direction:column;gap:4px;text-align:left;width:100%;padding:12px 14px;border-radius:12px;background:var(--white);border:1px solid var(--line);color:var(--ink)}
+.row.on{background:var(--teal-bg);border:2px solid var(--teal)}
+.pill{font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;white-space:nowrap}
+main{flex:1;min-width:0;display:flex;flex-direction:column}
+.phead{padding:18px 28px 0;display:flex;flex-direction:column;gap:14px;background:var(--white);border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:4px}
+.tab{min-height:44px;padding:0 18px;border:none;background:transparent;font-size:14px;color:var(--muted);border-bottom:3px solid transparent}
+.tab.on{font-weight:700;color:var(--ink);border-bottom-color:var(--teal)}
+.content{flex:1;min-height:0;overflow-y:auto;padding:20px 28px 28px}
+.card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+h1{margin:0;font-size:22px}
+h2{margin:0;font-size:16px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:16px}
+.cap{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.tile{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;background:var(--soft);border:1px solid #E3E9E7}
+.tile.bad{background:var(--alert-bg);border-color:var(--alert-line)}
+.est{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;background:var(--soft);border:1px solid #E3E9E7}
+.est.bad{background:var(--alert-bg);border-color:var(--alert-line)}
+.chip{min-height:38px;padding:0 14px;border-radius:999px;font-size:13px;background:var(--white);border:1px solid #C9D4D1}
+.chip.on{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700}
+.opt{min-height:44px;text-align:left;padding:0 14px;border-radius:10px;font-size:14px;background:var(--white);border:1px solid #C9D4D1}
+.opt.on{background:var(--teal-bg);border:2px solid var(--teal);font-weight:700}
+.slot{min-height:44px;border-radius:10px;font-size:15px;background:var(--white);border:1px solid #C9D4D1}
+.slot.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:700}
+.primary{min-height:52px;border:none;border-radius:12px;background:var(--teal);color:#fff;font-size:16px;font-weight:700}
+.dark{min-height:50px;border:none;border-radius:12px;background:var(--ink);color:#fff;font-size:15px;font-weight:700}
+.ghost{min-height:44px;border:1px solid #C9D4D1;border-radius:12px;background:var(--white);font-size:14px;font-weight:600}
+.okbox{display:flex;gap:12px;align-items:flex-start;background:var(--teal-bg);border-radius:12px;padding:14px 16px}
+.warnbox{display:flex;gap:12px;align-items:flex-start;background:var(--alert-bg);border:1px solid #E9A47F;border-radius:12px;padding:14px 16px;color:#5A2A12;line-height:1.45}
+.tag{font-size:13px;background:var(--teal-bg);padding:6px 12px;border-radius:999px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--ink);color:#fff;text-align:left;padding:12px 16px;font-weight:600}
+td{padding:12px 16px;border-top:1px solid #E3E9E7}
+a.link{color:var(--teal);font-weight:600}
+.task{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;padding:12px 14px;border-radius:14px;background:var(--white);border:1px solid var(--line);text-align:left}
+.task.on{background:var(--teal-bg);border-color:#B9DAD5}
+.box{width:24px;height:24px;flex-shrink:0;border-radius:7px;display:flex;align-items:center;justify-content:center;background:#fff;border:2px solid #8AA3A0}
+.task.on .box{background:var(--teal);border-color:var(--teal)}
+</style>
+</head>
+<body>
+<div class="chrome">
+<span>PaseÁgil · prototipo · datos ficticios</span>
+<button type="button" id="btnTablet" class="on">Tablet del médico</button>
+<button type="button" id="btnPhone">Celular de enfermería</button>
+<button type="button" id="btnReset">Reiniciar demo</button>
+</div>
+<div class="stage" id="stage">
+<div class="frame" id="tablet"></div>
+<div class="frame hidden" id="phone"></div>
+</div>
+
+<script>
+(function () {
+'use strict';
+var HOURS = ['09','12','15','18','21','00','03','06','09'];
+var NOW = 7 * 60 + 45;
+var PATIENTS = [
+ {id:'12',name:'Juan P.',age:64,dx:'Colecistitis aguda',day:'día 3',temp:[36.8,37.0,37.2,37.6,38.0,38.3,38.6,37.6,37.1],fc:[88,90,92,96,100,102,104,98,104],ta:'118/72',sat:95,fr:20,ing:2400,egr:1650,
+  est:[{t:'Creatinina',v:'0,9 mg/dl',a:false},{t:'Leucocitos',v:'16.000/mm³',a:true},{t:'Bilirrubina total',v:'1,1 mg/dl',a:false},{t:'PCR',v:'12 mg/dl',a:true},{t:'Ecografía abdominal',v:'Vesícula distendida, pared engrosada',a:true}],
+  pend:['Hemocultivos × 2 · sin resultado','Interconsulta Infectología · sin respuesta']},
+ {id:'14',name:'María L.',age:47,dx:'Post-op hernioplastia',day:'día 1',temp:[36.6,36.7,36.9,36.8,36.7,36.6,36.5,36.6,36.7],fc:[78,80,82,80,76,74,72,74,76],ta:'122/78',sat:98,fr:16,ing:1800,egr:1700,
+  est:[{t:'Hemoglobina',v:'12,8 g/dl',a:false},{t:'Leucocitos',v:'8.200/mm³',a:false}],pend:[]},
+ {id:'15',name:'Roberto G.',age:71,dx:'Pancreatitis aguda leve',day:'día 2',temp:[37.0,37.2,37.4,37.5,37.3,37.2,37.1,37.0,37.0],fc:[96,98,100,98,96,94,92,92,90],ta:'134/82',sat:93,fr:22,ing:3200,egr:1900,
+  est:[{t:'Calcio',v:'8,9 mg/dl',a:false},{t:'Lipasa',v:'890 U/l',a:true},{t:'Creatinina',v:'1,6 mg/dl',a:true},{t:'Glucemia',v:'142 mg/dl',a:true}],pend:['TC de abdomen con contraste · programada 11:00']},
+ {id:'16',name:'Ana S.',age:58,dx:'Apendicitis aguda',day:'ingreso',temp:[37.2,37.4,37.8,38.1,38.0,37.8,37.6,37.5,37.4],fc:[90,94,98,102,100,98,96,94,92],ta:'116/70',sat:97,fr:18,ing:1500,egr:1100,
+  est:[{t:'Coagulograma',v:'Normal',a:false},{t:'Leucocitos',v:'14.500/mm³',a:true},{t:'TC de abdomen',v:'Apéndice de 11 mm con trabeculación grasa',a:true}],pend:['Consentimiento quirúrgico · pendiente de firma']},
+ {id:'18',name:'Carlos M.',age:39,dx:'Suboclusión intestinal',day:'día 1',temp:[36.9,37.0,37.0,37.1,37.0,36.9,36.9,37.0,37.0],fc:[84,86,88,90,92,90,88,86,86],ta:'128/80',sat:97,fr:18,ing:2600,egr:2100,
+  est:[{t:'Hemograma',v:'Sin alteraciones',a:false},{t:'Potasio',v:'3,1 mEq/l',a:true},{t:'Rx de abdomen',v:'Niveles hidroaéreos',a:true}],pend:['Débito por sonda nasogástrica · registrar cada 6 h']},
+ {id:'21',name:'Elena R.',age:66,dx:'Post-op colectomía',day:'día 4',temp:[36.7,36.8,36.9,37.0,36.9,36.8,36.7,36.8,36.8],fc:[76,78,80,78,76,74,74,76,78],ta:'130/76',sat:96,fr:16,ing:2000,egr:2300,
+  est:[{t:'Albúmina',v:'3,4 g/dl',a:false},{t:'Hemoglobina',v:'9,8 g/dl',a:true}],pend:['Interconsulta Nutrición · respondida, revisar']}
+];
+var STUDIES = [
+ {g:'Laboratorio',n:'Laboratorio de control',r:'Enfermería',h:'10:00'},{g:'Laboratorio',n:'Coagulograma',r:'Enfermería',h:'10:00'},
+ {g:'Laboratorio',n:'Ionograma',r:'Enfermería',h:'10:00'},{g:'Laboratorio',n:'Hemocultivos',r:'Enfermería',h:'09:00'},
+ {g:'Imágenes',n:'Eco abdominal',r:'Diagnóstico por imágenes',h:'11:30'},{g:'Imágenes',n:'Rx de tórax',r:'Diagnóstico por imágenes',h:'11:00'},
+ {g:'Imágenes',n:'TC de abdomen',r:'Diagnóstico por imágenes',h:'12:00'},{g:'Imágenes',n:'ECG',r:'Enfermería',h:'09:30'},
+ {g:'Interconsultas',n:'IC Infectología',r:'Residente',h:'12:00'},{g:'Interconsultas',n:'IC Cardiología',r:'Residente',h:'12:00'},{g:'Interconsultas',n:'IC Nutrición',r:'Residente',h:'12:00'}
+];
+var PROCS = ['Colecistectomía laparoscópica','Apendicectomía laparoscópica','Hernioplastia inguinal','Laparotomía exploradora'];
+var SLOTS = [8,10,12,14,16,18];
+var QUICK = ['Afebril, buena evolución','Mantener antibiótico','Progresar dieta','Control de laboratorio mañana','Alta probable en 48 h'];
+var NTASKS = [
+ {id:'a',title:'Hemocultivos × 2',meta:'Cama 12 · 09:00 · pedido por Dra. V. Diz'},
+ {id:'b',title:'ECG',meta:'Cama 16 · 09:30 · prequirúrgico'},
+ {id:'c',title:'Laboratorio de control y coagulograma',meta:'Cama 12 · 10:00'},
+ {id:'d',title:'Traslado a tomografía',meta:'Cama 15 · 11:00 · TC de abdomen con contraste'},
+ {id:'e',title:'Registrar débito por sonda nasogástrica',meta:'Cama 18 · 12:00'}
+];
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function hhmm(m){var prev='';while(m<0){m+=1440;prev=' (día anterior)';}var h=Math.floor(m/60)%24,mi=m%60;return (h<10?'0':'')+h+':'+(mi<10?'0':'')+mi+prev;}
+function ml(n){return n.toLocaleString('es-AR')+' ml';}
+function pts(arr,min,max){return arr.map(function(v,i){return (i*70)+','+(140-(v-min)/(max-min)*140).toFixed(1);}).join(' ');}
+function yOf(v,min,max){return (140-(v-min)/(max-min)*140).toFixed(1);}
+var ENR = PATIENTS.map(function(p){
+ var tmax=Math.max.apply(null,p.temp),fcLast=p.fc[p.fc.length-1],bal=p.ing-p.egr;
+ var ea=p.est.filter(function(e){return e.a;}).length;
+ var va=(tmax>=38?1:0)+(fcLast>100?1:0)+(p.sat<95?1:0)+(p.fr>20?1:0);
+ var balAlert=Math.abs(bal)>500;
+ return Object.assign({},p,{tmax:tmax,fcLast:fcLast,bal:bal,balAlert:balAlert,alerts:ea+va+(balAlert?1:0)});
+}).sort(function(a,b){return b.alerts-a.alerts;});
+
+var S;
+function initState(){
+ S={sel:'12',tab:'24h',view:'paciente',clock:NOW,done:{},notes:{},talked:{},studies:{},
+  surg:{'16':{proc:'Apendicectomía laparoscópica',hour:12,delay:0}},formProc:PROCS[0],formHour:14,
+  log:[{time:'07:30',who:'Sistema',text:'Tablero de 24 h generado para 6 pacientes desde la historia clínica'},
+       {time:'07:32',who:'Quirófano',text:'Cama 16 · Apendicectomía laparoscópica a las 12:00 · ayuno calculado y avisado'}],
+  ndone:{}};
+}
+function tick(text,who){S.clock+=2;S.log.push({time:hhmm(S.clock),who:who||'Dra. V. Diz',text:text});}
+function cur(){return ENR.filter(function(p){return p.id===S.sel;})[0];}
+
+var ICON_LOGO='<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="#1F7C76"/><polyline points="4,16 10,16 13,10 17,22 20,14 26,14" fill="none" stroke="#F3F6F5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_CHECK='<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" style="flex-shrink:0"><circle cx="11" cy="11" r="10" fill="#1F7C76"/><polyline points="6,11.5 9.5,15 16,7.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var ICON_WARN='<svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true" style="flex-shrink:0"><path d="M11 2 L21 19 L1 19 Z" fill="#B4501F"/><line x1="11" y1="8" x2="11" y2="13" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="16" r="1.2" fill="#fff"/></svg>';
+var ICON_CLOCK='<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style="flex-shrink:0;margin-top:2px"><circle cx="8" cy="8" r="6.5" fill="none" stroke="#B4501F" stroke-width="1.6"/><line x1="8" y1="4.5" x2="8" y2="8.5" stroke="#B4501F" stroke-width="1.6" stroke-linecap="round"/><line x1="8" y1="8.5" x2="10.5" y2="10" stroke="#B4501F" stroke-width="1.6" stroke-linecap="round"/></svg>';
+
+function renderTablet(){
+ var c=cur(),doneCount=Object.keys(S.done).length,chosen=S.studies[S.sel]||[];
+ var h='';
+ h+='<header class="top"><div class="logo">'+ICON_LOGO+'<span>PaseÁgil</span></div>';
+ h+='<div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">Cirugía general · Piso 4</span><span style="font-size:12px;color:#A9C9C4">Jueves 29 de octubre · 07:45 · Dra. V. Diz</span></div>';
+ h+='<div style="flex:1"></div><div style="display:flex;flex-direction:column;gap:6px;width:200px"><span style="font-size:12px;color:#C9DDD9">Pase realizado: '+doneCount+' de '+ENR.length+' pacientes</span><div style="height:6px;border-radius:3px;background:#2A4650;overflow:hidden"><div style="height:6px;background:#8FC9C3;width:'+Math.round(doneCount/ENR.length*100)+'%"></div></div></div>';
+ h+='<button type="button" data-act="resumen" style="min-height:44px;padding:0 18px;border-radius:10px;font-size:14px;font-weight:700;'+(S.view==='resumen'?'background:#8FC9C3;color:#0F2A33;border:1px solid #8FC9C3':'background:transparent;color:#F3F6F5;border:1px solid #5E7A80')+'">'+(S.view==='resumen'?'Volver al paciente':'Resumen del pase')+'</button></header>';
+ h+='<div class="body"><nav class="side" aria-label="Pacientes"><div style="display:flex;justify-content:space-between;align-items:baseline;padding:0 6px 4px"><span style="font-size:15px;font-weight:700">Pacientes internados</span><span class="small muted">ordenados por alertas</span></div>';
+ ENR.forEach(function(p){
+  var on=p.id===S.sel&&S.view==='paciente',d=!!S.done[p.id],sg=S.surg[p.id];
+  var badge=d?'Pase hecho':(p.alerts?p.alerts+' alertas':'Sin alertas');
+  var bst=d?'background:#1F7C76;color:#fff':(p.alerts?'background:#FBEDE5;color:#B4501F':'background:#EEF2F1;color:#4E6166');
+  h+='<button type="button" class="row'+(on?' on':'')+'" data-act="pick" data-id="'+p.id+'"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span style="font-size:13px;font-weight:700;color:#1F7C76">Cama '+p.id+'</span><span class="pill" style="'+bst+'">'+badge+'</span></div>';
+  h+='<span style="font-size:15px;font-weight:600">'+esc(p.name)+', '+p.age+' años</span><span class="muted" style="font-size:13px">'+esc(p.dx)+' · '+p.day+'</span>';
+  if(sg)h+='<span style="font-size:12px;font-weight:600">Cirugía '+hhmm((sg.hour+sg.delay)*60)+' · ayuno programado</span>';
+  h+='</button>';
+ });
+ h+='</nav><main>';
+ if(S.view==='resumen'){h+=renderResumen();}
+ else{
+  h+='<div class="phead"><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h1>Cama '+c.id+' · '+esc(c.name)+', '+c.age+' años</h1><span style="font-size:13px;font-weight:600;color:#1F7C76;background:#E3F1EF;padding:4px 12px;border-radius:999px">'+esc(c.dx)+' · '+c.day+'</span>';
+  if(c.alerts)h+='<span style="font-size:13px;font-weight:700;color:#B4501F;background:#FBEDE5;padding:4px 12px;border-radius:999px">'+c.alerts+' datos patológicos</span>';
+  h+='<div style="flex:1"></div><span class="small muted">Integrado con la historia clínica · HL7 FHIR</span></div><div class="tabs" role="tablist">';
+  [['24h','Últimas 24 h'],['pase','Registro del pase'],['cir','Cirugía y ayuno']].forEach(function(t){h+='<button type="button" role="tab" aria-selected="'+(S.tab===t[0])+'" class="tab'+(S.tab===t[0]?' on':'')+'" data-act="tab" data-id="'+t[0]+'">'+t[1]+'</button>';});
+  h+='</div></div><div class="content">';
+  if(S.tab==='24h')h+=render24(c);else if(S.tab==='pase')h+=renderPase(c,chosen);else h+=renderCir();
+  h+='</div>';
+ }
+ h+='</main></div>';
+ document.getElementById('tablet').innerHTML=h;
+}
+
+function tile(label,value,bad,note){return '<div class="tile'+(bad?' bad':'')+'"><span class="small muted">'+label+'</span><span style="font-size:20px;font-weight:700">'+value+'</span><span class="small" style="font-weight:600;color:'+(bad?'#B4501F':'#4E6166')+'">'+(bad?note:'en rango')+'</span></div>';}
+
+function render24(c){
+ var mi=c.temp.indexOf(c.tmax),h='<div class="grid2"><section class="card" style="gap:14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Signos vitales · últimas 24 h</h2><span class="small muted">Fuente: hoja de enfermería</span></div>';
+ h+='<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px">'+tile('T máx.',String(c.tmax).replace('.',',')+' °C',c.tmax>=38,'fiebre a las '+HOURS[mi]+' h')+tile('FC actual',c.fcLast+' lpm',c.fcLast>100,'taquicardia')+tile('TA',c.ta,false,'')+tile('Sat O₂',c.sat+' %',c.sat<95,'baja')+tile('FR',c.fr+' rpm',c.fr>20,'elevada')+'</div>';
+ h+='<div style="display:flex;flex-direction:column;gap:4px"><span class="small" style="font-weight:600">Temperatura (°C) · línea punteada: 38 °C</span>';
+ h+='<svg role="img" aria-label="Temperatura de las últimas 24 horas, máxima '+c.tmax+' grados" width="100%" height="96" viewBox="0 0 560 140" preserveAspectRatio="none" style="display:block;background:#F7FAF9;border-radius:8px"><line x1="0" y1="'+yOf(38,36,39.5)+'" x2="560" y2="'+yOf(38,36,39.5)+'" stroke="#E9A47F" stroke-width="2" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"/><polyline points="'+pts(c.temp,36,39.5)+'" fill="none" stroke="#1F7C76" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'+(c.tmax>=38?'<circle cx="'+(mi*70)+'" cy="'+yOf(c.tmax,36,39.5)+'" r="7" fill="#C8592A"/>':'')+'</svg>';
+ h+='<span class="small" style="font-weight:600;margin-top:6px">Frecuencia cardíaca (lpm) · línea punteada: 100 lpm</span>';
+ h+='<svg role="img" aria-label="Frecuencia cardíaca de las últimas 24 horas, actual '+c.fcLast+'" width="100%" height="96" viewBox="0 0 560 140" preserveAspectRatio="none" style="display:block;background:#F7FAF9;border-radius:8px"><line x1="0" y1="'+yOf(100,60,130)+'" x2="560" y2="'+yOf(100,60,130)+'" stroke="#E9A47F" stroke-width="2" stroke-dasharray="8 6" vector-effect="non-scaling-stroke"/><polyline points="'+pts(c.fc,60,130)+'" fill="none" stroke="#0F2A33" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/></svg>';
+ h+='<div style="display:flex;justify-content:space-between" class="small muted">'+HOURS.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div></div></section>';
+ h+='<div style="display:flex;flex-direction:column;gap:16px"><section class="card"><h2>Ingresos y egresos · 24 h</h2><div style="display:flex;justify-content:space-between"><span class="muted">Ingresos (VO + EV)</span><b>'+ml(c.ing)+'</b></div><div style="display:flex;justify-content:space-between"><span class="muted">Egresos (diuresis + drenajes)</span><b>'+ml(c.egr)+'</b></div>';
+ h+='<div style="display:flex;justify-content:space-between;font-weight:700;padding:10px 12px;border-radius:10px;'+(c.balAlert?'background:#FBEDE5;color:#B4501F':'background:#E3F1EF')+'"><span>Balance '+(c.bal>0?'+':'')+ml(c.bal)+'</span><span>'+(c.balAlert?'revisar · objetivo ±500 ml':'dentro del objetivo')+'</span></div></section>';
+ h+='<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Pendientes</h2><span class="small muted">'+(c.pend.length?c.pend.length+' abiertos':'')+'</span></div>';
+ if(!c.pend.length)h+='<span class="muted">Sin pendientes abiertos.</span>';
+ c.pend.forEach(function(p){h+='<div style="display:flex;gap:10px;align-items:flex-start;line-height:1.35">'+ICON_CLOCK+'<span>'+esc(p)+'</span></div>';});
+ h+='</section></div>';
+ h+='<section class="card" style="grid-column:span 2"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Estudios complementarios · últimas 24 h</h2><span class="small muted">Lo patológico, primero</span></div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">';
+ c.est.slice().sort(function(a,b){return (b.a?1:0)-(a.a?1:0);}).forEach(function(e){
+  h+='<div class="est'+(e.a?' bad':'')+'"><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span class="muted" style="font-size:13px">'+esc(e.t)+'</span><span style="font-size:15px;font-weight:600;color:'+(e.a?'#B4501F':'#0F2A33')+'">'+esc(e.v)+'</span></div>'+(e.a?'<span class="pill" style="background:#B4501F;color:#fff">Patológico</span>':'')+'</div>';
+ });
+ h+='</div></section></div>';
+ return h;
+}
+
+function tasksFor(c,chosen){
+ return STUDIES.filter(function(x){return chosen.indexOf(x.n)>=0;}).map(function(x){return {n:x.n,r:x.r,h:x.h};})
+  .concat(c.pend.map(function(p){return {n:'Seguimiento: '+p,r:'Residente',h:'14:00'};}))
+  .sort(function(a,b){return a.h<b.h?-1:1;});
+}
+
+function renderPase(c,chosen){
+ var h='<div style="display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px"><div style="display:flex;flex-direction:column;gap:16px">';
+ h+='<section class="card"><label for="nota" style="font-size:16px;font-weight:700">Lo que se resuelve en el pase</label><textarea id="nota" rows="4" placeholder="Evolución, plan y decisiones del equipo" style="width:100%;resize:none;border:1px solid #C9D4D1;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.45;color:#0F2A33;background:#FBFCFC">'+esc(S.notes[S.sel]||'')+'</textarea>';
+ h+='<div style="display:flex;flex-wrap:wrap;gap:8px">';
+ QUICK.forEach(function(q,i){h+='<button type="button" data-act="quick" data-id="'+i+'" style="font-size:13px;background:#F3F6F5;border:1px solid #DCE3E1;border-radius:999px;padding:6px 12px;min-height:32px">+ '+esc(q)+'</button>';});
+ h+='</div><label style="display:flex;align-items:center;gap:10px;min-height:36px"><input type="checkbox" id="talk" '+(S.talked[S.sel]?'checked':'')+' style="width:18px;height:18px;accent-color:#1F7C76"> Plan conversado con el paciente y su familia</label></section>';
+ h+='<section class="card" style="gap:12px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Pedir estudios e interconsultas</h2><span class="small muted">Un toque para pedir</span></div>';
+ ['Laboratorio','Imágenes','Interconsultas'].forEach(function(g){
+  h+='<div style="display:flex;flex-direction:column;gap:8px"><span class="cap">'+g+'</span><div style="display:flex;flex-wrap:wrap;gap:8px">';
+  STUDIES.forEach(function(x,i){if(x.g!==g)return;var on=chosen.indexOf(x.n)>=0;h+='<button type="button" aria-pressed="'+on+'" class="chip'+(on?' on':'')+'" data-act="study" data-id="'+i+'">'+(on?'✓ ':'')+esc(x.n)+'</button>';});
+  h+='</div></div>';
+ });
+ h+='</section></div><div style="display:flex;flex-direction:column;gap:16px">';
+ var tasks=tasksFor(c,chosen);
+ h+='<section class="card"><div style="display:flex;justify-content:space-between;align-items:baseline"><h2>Tareas del día</h2><span class="small muted">'+tasks.length+' con responsable y horario</span></div>';
+ if(!tasks.length)h+='<span class="muted">Elegí estudios para generar las tareas.</span>';
+ tasks.forEach(function(k){h+='<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #E3E9E7;border-radius:10px"><span style="font-size:13px;font-weight:700;color:#1F7C76;width:44px;flex-shrink:0">'+k.h+'</span><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:600">'+esc(k.n)+'</span><span class="small muted">'+esc(k.r)+'</span></div></div>';});
+ h+='</section><button type="button" class="primary" data-act="confirm">'+(S.done[S.sel]?'Actualizar registro del pase':'Confirmar y registrar el pase')+'</button>';
+ if(S.done[S.sel])h+='<div class="okbox">'+ICON_CHECK+'<div style="display:flex;flex-direction:column;gap:4px"><b>Registrado en la historia clínica · '+S.done[S.sel]+'</b><span style="font-size:13px;line-height:1.4">Dra. V. Diz · '+chosen.length+' pedidos · tareas enviadas a enfermería, imágenes y residentes. Queda trazabilidad de qué se sabía, qué se decidió y quién lo hizo.</span></div></div>';
+ h+='</div></div>';
+ return h;
+}
+
+function renderCir(){
+ var sg=S.surg[S.sel],h='<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px"><section class="card" style="gap:14px"><h2>Indicar cirugía</h2><div style="display:flex;flex-direction:column;gap:8px"><span class="cap">Procedimiento</span>';
+ PROCS.forEach(function(p,i){h+='<button type="button" aria-pressed="'+(S.formProc===p)+'" class="opt'+(S.formProc===p?' on':'')+'" data-act="proc" data-id="'+i+'">'+esc(p)+'</button>';});
+ h+='</div><div style="display:flex;flex-direction:column;gap:8px"><span class="cap">Turno en quirófano 3 (agenda de hoy)</span><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">';
+ SLOTS.forEach(function(s){h+='<button type="button" aria-pressed="'+(S.formHour===s)+'" class="slot'+(S.formHour===s?' on':'')+'" data-act="slot" data-id="'+s+'">'+hhmm(s*60)+'</button>';});
+ h+='</div></div><button type="button" class="dark" data-act="indicate">'+(sg?'Actualizar indicación de cirugía':'Indicar cirugía y programar ayuno')+'</button><span class="small muted" style="line-height:1.4">Regla de ayuno según guías ASA: sólidos hasta 8 h antes y líquidos claros hasta 2 h antes. El equipo de anestesia puede ajustarla por paciente.</span></section>';
+ h+='<section class="card" style="gap:14px">';
+ if(!sg){h+='<div style="display:flex;flex-direction:column;gap:8px;padding:24px 4px"><h2>Sin cirugía indicada</h2><span class="muted" style="line-height:1.45">Elegí el procedimiento y el turno. PaseÁgil calcula el ayuno, avisa a enfermería, nutrición y anestesia, y lo recalcula si quirófano cambia el horario.</span></div>';}
+ else{
+  var t=(sg.hour+sg.delay)*60,so=t-480,li=t-120,start=t-600;
+  var status=NOW>=li?'ayuno total':(NOW>=so?'solo líquidos claros hasta las '+hhmm(li):'puede comer hasta las '+hhmm(so));
+  var pct=Math.round((NOW-start)/600*1000)/10;
+  h+='<div style="display:flex;justify-content:space-between;align-items:center;gap:12px"><div style="display:flex;flex-direction:column;gap:2px"><h2>'+esc(sg.proc)+'</h2><span class="muted" style="font-size:13px">Quirófano 3 · hoy '+hhmm(t)+'</span></div><span style="font-size:13px;font-weight:700;color:#1F7C76;background:#E3F1EF;padding:6px 12px;border-radius:999px">Ayuno programado</span></div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px"><div style="background:#F3F6F5;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px"><span class="small muted">Último sólido</span><span style="font-size:20px;font-weight:700">'+hhmm(so)+'</span></div><div style="background:#F3F6F5;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px"><span class="small muted">Último líquido claro</span><span style="font-size:20px;font-weight:700">'+hhmm(li)+'</span></div><div style="background:#0F2A33;color:#fff;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px"><span class="small" style="color:#C9DDD9">Ingreso a quirófano</span><span style="font-size:20px;font-weight:700">'+hhmm(t)+'</span></div></div>';
+  h+='<div style="display:flex;flex-direction:column;gap:6px"><div style="position:relative;display:flex;height:22px;border-radius:6px;overflow:hidden"><div style="flex:2;background:#D5E7E4"></div><div style="flex:6;background:#E9A47F"></div><div style="flex:2;background:#C8592A"></div>'+(pct>=0&&pct<=100?'<div style="position:absolute;top:0;bottom:0;width:4px;background:#0F2A33;left:'+pct+'%"></div>':'')+'</div><div style="display:grid;grid-template-columns:2fr 6fr 2fr" class="small"><span>Dieta habitual</span><span>Solo líquidos claros</span><span>Ayuno total</span></div></div>';
+  h+='<div style="display:flex;align-items:center;gap:10px;background:#F3F6F5;border-radius:10px;padding:12px 14px;font-weight:600">Ahora (07:45): '+status+'</div>';
+  h+='<div style="display:flex;flex-wrap:wrap;gap:8px"><span class="tag">Enfermería avisada</span><span class="tag">Nutrición avisada</span><span class="tag">Anestesia avisada</span></div>';
+  if(sg.delay>0)h+='<div class="warnbox">'+ICON_WARN+'<span><b>Quirófano reprogramó de '+hhmm(sg.hour*60)+' a '+hhmm(t)+'.</b> Ayuno recalculado: sólidos hasta '+hhmm(so)+' y líquidos claros hasta '+hhmm(li)+'. El equipo ya fue avisado.</span></div>';
+  h+='<button type="button" class="ghost" data-act="reprogram">Simular cambio de quirófano (+2 h)</button>';
+ }
+ h+='</section></div>';
+ return h;
+}
+
+function renderResumen(){
+ var doneCount=Object.keys(S.done).length;
+ var openAlerts=ENR.filter(function(p){return !S.done[p.id];}).reduce(function(a,p){return a+p.alerts;},0);
+ var tot=Object.keys(S.studies).reduce(function(a,k){return a+S.studies[k].length;},0);
+ var h='<div class="content" style="display:flex;flex-direction:column;gap:18px"><div style="display:flex;justify-content:space-between;align-items:baseline"><h1>Resumen del pase · Cirugía general · Piso 4</h1><span class="muted" style="font-size:13px">Se actualiza con cada registro</span></div><div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">';
+ [[doneCount+' / '+ENR.length,'pacientes con pase registrado'],[openAlerts,'datos patológicos sin revisar'],[tot,'estudios e interconsultas pedidos'],[Object.keys(S.surg).length,'cirugías con ayuno programado']].forEach(function(k){h+='<div class="card" style="gap:4px"><span style="font-size:30px;font-weight:700">'+k[0]+'</span><span class="muted" style="font-size:13px">'+k[1]+'</span></div>';});
+ h+='</div><section class="card" style="padding:0;overflow:hidden"><table><thead><tr><th>Cama</th><th>Paciente</th><th>Datos patológicos</th><th>Pase</th><th>Pedidos</th><th>Cirugía y ayuno</th></tr></thead><tbody>';
+ ENR.forEach(function(p){
+  var d=S.done[p.id],g=S.surg[p.id],n=(S.studies[p.id]||[]).length;
+  h+='<tr><td style="font-weight:700;color:#1F7C76">'+p.id+'</td><td><a href="#" class="link" data-act="open" data-id="'+p.id+'">'+esc(p.name)+', '+p.age+'</a><br><span class="small muted">'+esc(p.dx)+' · '+p.day+'</span></td>';
+  h+='<td style="font-weight:600;color:'+(p.alerts&&!d?'#B4501F':'#4E6166')+'">'+(p.alerts?p.alerts+' abiertos':'Ninguno')+'</td><td style="font-weight:600;color:'+(d?'#1F7C76':'#4E6166')+'">'+(d?'Realizado '+d:'Pendiente')+'</td><td>'+(n?n+(n===1?' pedido':' pedidos'):'—')+'</td>';
+  h+='<td>'+(g?esc(g.proc)+' · '+hhmm((g.hour+g.delay)*60)+' · sólidos hasta '+hhmm((g.hour+g.delay)*60-480):'—')+'</td></tr>';
+ });
+ h+='</tbody></table></section><section class="card"><h2>Trazabilidad del pase</h2>';
+ S.log.slice().reverse().forEach(function(l){h+='<div style="display:flex;gap:14px;padding:6px 0;border-top:1px solid #EEF2F1"><span style="font-weight:700;color:#1F7C76;width:44px;flex-shrink:0">'+l.time+'</span><span class="muted" style="width:110px;flex-shrink:0">'+esc(l.who)+'</span><span>'+esc(l.text)+'</span></div>';});
+ h+='</section></div>';
+ return h;
+}
+
+function renderPhone(){
+ var pending=NTASKS.filter(function(t){return !S.ndone[t.id];}).length;
+ var h='<header style="background:#0F2A33;color:#F3F6F5;padding:28px 20px 18px;display:flex;flex-direction:column;gap:12px"><div class="logo" style="font-size:18px">'+ICON_LOGO+'<span>PaseÁgil · Enfermería</span></div><span style="font-size:13px;color:#C9DDD9">Piso 4 · turno mañana · 07:52</span>';
+ h+='<div style="display:flex;gap:8px"><div style="flex:1;background:#1E3B44;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:22px;font-weight:700">'+pending+'</span><span class="small" style="color:#C9DDD9">tareas pendientes</span></div><div style="flex:1;background:#1E3B44;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px"><span style="font-size:22px;font-weight:700">2</span><span class="small" style="color:#C9DDD9">pacientes en ayuno</span></div></div></header>';
+ h+='<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px"><span class="cap">Ayunos programados</span>';
+ h+='<div style="background:#FBEDE5;border:1px solid #E9A47F;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:15px">Cama 12 · Juan P.</b><span class="small" style="font-weight:700;color:#B4501F">Reprogramado</span></div><span style="line-height:1.4">Colecistectomía <b>16:00</b> (antes 14:00). Sólidos hasta <b>08:00</b> · líquidos claros hasta <b>14:00</b>.</span></div>';
+ h+='<div style="background:#fff;border:1px solid #DCE3E1;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:15px">Cama 16 · Ana S.</b><span class="small" style="font-weight:700;color:#1F7C76">Quirófano 3</span></div><span style="line-height:1.4">Apendicectomía <b>12:00</b>. Ya en ayuno de sólidos · líquidos claros hasta <b>10:00</b>.</span></div>';
+ h+='<span class="cap" style="margin-top:6px">Tareas del pase</span>';
+ NTASKS.forEach(function(t){var on=!!S.ndone[t.id];h+='<button type="button" aria-pressed="'+on+'" class="task'+(on?' on':'')+'" data-act="ntask" data-id="'+t.id+'"><span class="box">'+(on?'<svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><polyline points="2.5,7.5 5.5,10.5 11.5,3.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>':'')+'</span><span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:15px;font-weight:600;'+(on?'text-decoration:line-through;color:#4E6166':'')+'">'+esc(t.title)+'</span><span class="small muted">'+(on?'Hecho · ':'')+esc(t.meta)+'</span></span></button>';});
+ h+='</div>';
+ document.getElementById('phone').innerHTML=h;
+}
+
+function render(){renderTablet();renderPhone();fit();}
+
+document.addEventListener('click',function(e){
+ var b=e.target.closest('[data-act]');if(!b)return;
+ var a=b.getAttribute('data-act'),id=b.getAttribute('data-id');
+ if(a==='open')e.preventDefault();
+ if(a==='pick'||a==='open'){var sp=S.surg[id];S.sel=id;S.view='paciente';S.tab='24h';S.formProc=sp?sp.proc:PROCS[0];S.formHour=sp?sp.hour+sp.delay:14;}
+ else if(a==='resumen'){S.view=S.view==='resumen'?'paciente':'resumen';}
+ else if(a==='tab'){S.tab=id;}
+ else if(a==='quick'){var prev=S.notes[S.sel]||'';S.notes[S.sel]=prev?prev+'. '+QUICK[+id]:QUICK[+id];}
+ else if(a==='study'){var n=STUDIES[+id].n,l=(S.studies[S.sel]||[]).slice(),i=l.indexOf(n);if(i>=0)l.splice(i,1);else l.push(n);S.studies[S.sel]=l;}
+ else if(a==='confirm'){var k=(S.studies[S.sel]||[]).length;tick('Cama '+S.sel+' · pase registrado · '+k+(k===1?' pedido':' pedidos')+(S.talked[S.sel]?' · plan conversado con la familia':''));S.done[S.sel]=hhmm(S.clock);}
+ else if(a==='proc'){S.formProc=PROCS[+id];}
+ else if(a==='slot'){S.formHour=+id;}
+ else if(a==='indicate'){S.surg[S.sel]={proc:S.formProc,hour:S.formHour,delay:0};tick('Cama '+S.sel+' · '+S.formProc+' a las '+hhmm(S.formHour*60)+' · sólidos hasta '+hhmm(S.formHour*60-480)+', líquidos claros hasta '+hhmm(S.formHour*60-120));}
+ else if(a==='reprogram'){var g=S.surg[S.sel];if(g){var nd=g.delay+2;if(g.hour+nd>22)nd=g.delay;g.delay=nd;S.formHour=g.hour+nd;tick('Cama '+S.sel+' · quirófano movió la cirugía a las '+hhmm((g.hour+nd)*60)+' · ayuno recalculado y equipo avisado','Quirófano');}}
+ else if(a==='ntask'){S.ndone[id]=!S.ndone[id];}
+ else return;
+ render();
+});
+document.addEventListener('input',function(e){if(e.target.id==='nota')S.notes[S.sel]=e.target.value;});
+document.addEventListener('change',function(e){if(e.target.id==='talk')S.talked[S.sel]=e.target.checked;});
+
+var screen='tablet';
+function fit(){
+ var st=document.getElementById('stage'),el=document.getElementById(screen);
+ var w=screen==='tablet'?1280:390,h=screen==='tablet'?800:844;
+ var s=Math.min((st.clientWidth-32)/w,(st.clientHeight-32)/h,1.25);
+ el.style.transform='scale('+s+')';
+ el.style.margin=((h*s-h)/2)+'px '+((w*s-w)/2)+'px';
+}
+function show(which){
+ screen=which;
+ document.getElementById('tablet').classList.toggle('hidden',which!=='tablet');
+ document.getElementById('phone').classList.toggle('hidden',which!=='phone');
+ document.getElementById('btnTablet').classList.toggle('on',which==='tablet');
+ document.getElementById('btnPhone').classList.toggle('on',which==='phone');
+ fit();
+}
+document.getElementById('btnTablet').addEventListener('click',function(){show('tablet');});
+document.getElementById('btnPhone').addEventListener('click',function(){show('phone');});
+document.getElementById('btnReset').addEventListener('click',function(){initState();render();});
+window.addEventListener('resize',fit);
+initState();render();
+})();
+</script>
+</body>
+</html>
